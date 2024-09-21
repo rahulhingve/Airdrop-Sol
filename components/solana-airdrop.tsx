@@ -179,6 +179,9 @@ export function SolanaAirdropComponent() {
             variants={slideIn}
             className={`py-4 text-center text-sm ${isDarkTheme ? 'text-gray-400' : 'text-gray-600'}`}
           >
+            <div>
+              Made with ❤️ by <b>Rahul</b>
+            </div>
             © 2024 Solana Airdrop. All rights reserved. Not affiliated with Solana Foundation.
           </motion.footer>
           
