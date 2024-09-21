@@ -11,9 +11,9 @@ export function Airdrop(){
     const { connection } = useConnection();
 
     async function requestAirdrop() {
-        let amount = document.getElementById("amount").value;
+        const amount = document.getElementById("amount").value;
         try {
-            const signature = await connection.requestAirdrop(wallet.publicKey, LAMPORTS_PER_SOL * amount);
+            await connection.requestAirdrop(wallet.publicKey, LAMPORTS_PER_SOL * amount);
             alert("Airdropped " + amount + " SOL to " + wallet.publicKey.toBase58());
         } catch (error) {
             console.error("Airdrop failed:", error);
