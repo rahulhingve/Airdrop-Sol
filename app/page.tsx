@@ -9,7 +9,7 @@ import { SolanaAirdropComponent } from "@/components/solana-airdrop";
 export default function Home() {
   return (
     <>
-      <ConnectionProvider endpoint={"https://rahulurlhere.com"}>
+      <ConnectionProvider endpoint={process.env.NEXT_PUBLIC_DEVNET_ENDPOINT as string}>
         <WalletProvider wallets={[]} autoConnect>
           <WalletModalProvider>
             <SolanaAirdropComponent />

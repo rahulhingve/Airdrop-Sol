@@ -7,9 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { Loader2, ArrowRight, Wallet, Sun, Moon } from "lucide-react"
+import { Loader2, ArrowRight, Sun, Moon } from "lucide-react"
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+import { useConnection, useWallet } from "@solana/wallet-adapter-react"
+import { LAMPORTS_PER_SOL } from "@solana/web3.js"
+
 
 const fadeIn = {
   hidden: { opacity: 0 },
@@ -17,7 +21,7 @@ const fadeIn = {
 }
 
 const slideIn = {
-  hidden: { y: 20, opacity: 0 },
+  hidden: { y: 25, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
 }
 
@@ -28,38 +32,69 @@ export function SolanaAirdropComponent() {
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [isPageLoaded, setIsPageLoaded] = useState(false)
 
+
+
+
+
+  const wallet = useWallet();
+  const {connection} = useConnection();
+
+async function requestAirdrop(){
+
+  try {
+    setIsLoading(true)
+    if (parseFloat(amount) <= 0 || isNaN(parseFloat(amount))) {
+      setIsLoading(false)
+      toast.error("Please enter a valid amount")
+      return
+    }
+   
+
+    await connection.requestAirdrop(wallet.publicKey,amount *LAMPORTS_PER_SOL)
+    setIsLoading(false)
+    toast.success("Airdropped " + amount + " SOL is Success " )
+  } catch (error) {
+    setIsLoading(false)
+    console.error("Airdrop failed:", error);
+    toast.error("Airdropping failed se console for logs " )
+  }
+
+
+}
+
+
+  const checkWalletConnection = () => {
+    if (wallet.publicKey) {
+      setIsWalletConnected(true);
+      toast.success("Wallet connected successfully");
+    } else {
+      setIsWalletConnected(false);
+      toast.warn("Wallet disconnected");
+    }
+  };
+
+
+
+
+  useEffect(() => {
+    checkWalletConnection();
+  }, [wallet.publicKey]);
+
+
   useEffect(() => {
     setIsPageLoaded(true)
   }, [])
 
-  const handleClaim = async () => {
-    if (!isWalletConnected) {
-      toast.error("Please connect your wallet first")
-      return
-    }
-    if (parseFloat(amount) <= 0 || isNaN(parseFloat(amount))) {
-      toast.error("Please enter a valid amount")
-      return
-    }
-    setIsLoading(true)
-
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    toast.success(`Successfully claimed ${amount} SOL`)
-  }
+  
 
   const toggleTheme = () => {
     setIsDarkTheme(!isDarkTheme)
   }
 
-  const toggleWalletConnection = () => {
-    setIsWalletConnected(!isWalletConnected)
-    if (!isWalletConnected) {
-      toast.success("Wallet connected successfully")
-    } else {
-      toast.info("Wallet disconnected")
-    }
-  }
+
+
+
+
 
   return (
     <AnimatePresence>
@@ -100,24 +135,18 @@ export function SolanaAirdropComponent() {
                 {isDarkTheme ? <Moon className="h-4 w-4 text-white" /> : <Sun className="h-4 w-4 text-gray-800" />}
               </motion.div>
               <motion.div variants={slideIn}>
-                <Button
-                  variant={isDarkTheme ? "outline" : "default"}
-                  className={isDarkTheme ? "text-white border-white hover:bg-white hover:text-purple-900" : "text-purple-900 border-purple-900 hover:bg-purple-900 hover:text-white"}
-                  onClick={toggleWalletConnection}
-                >
-                  {isWalletConnected ? "Disconnect" : "Connect"} Wallet
-                  <Wallet className="ml-2 h-4 w-4" />
-                </Button>
+
+                <WalletMultiButton />
               </motion.div>
             </div>
           </motion.header>
-          
+
           <main className="flex-grow flex items-center justify-center px-4 py-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 1.0, delay: 0.2 }}
             >
               <Card className={`w-full max-w-md ${isDarkTheme ? 'bg-slate-800/50 backdrop-blur-lg' : 'bg-white'} border-0 shadow-2xl`}>
                 <CardHeader>
@@ -127,17 +156,17 @@ export function SolanaAirdropComponent() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.0, delay: 0.3 }}
                     className="space-y-2"
                   >
                     <Label htmlFor="amount" className={isDarkTheme ? "text-gray-200" : "text-gray-700"}>
                       Amount of SOL to claim
                     </Label>
-                    <Input 
+                    <Input
                       id="amount"
-                      type="number" 
+                      type="number"
                       placeholder="Enter amount of SOL"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
@@ -152,9 +181,9 @@ export function SolanaAirdropComponent() {
                     transition={{ duration: 0.5, delay: 0.6 }}
                     className="w-full"
                   >
-                    <Button 
+                    <Button
                       className={`w-full ${isDarkTheme ? 'bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600' : 'bg-gradient-to-r from-purple-400 to-indigo-400 hover:from-purple-500 hover:to-indigo-500'} text-white`}
-                      onClick={handleClaim}
+                      onClick={requestAirdrop}
                       disabled={isLoading || !isWalletConnected}
                     >
                       {isLoading ? (
@@ -169,12 +198,13 @@ export function SolanaAirdropComponent() {
                         </>
                       )}
                     </Button>
+                    {isWalletConnected ? <div></div> : <div className="text-red-600 mt-2">Please connect the Wallet First</div>}
                   </motion.div>
                 </CardFooter>
               </Card>
             </motion.div>
           </main>
-          
+
           <motion.footer
             variants={slideIn}
             className={`py-4 text-center text-sm ${isDarkTheme ? 'text-gray-400' : 'text-gray-600'}`}
@@ -184,7 +214,7 @@ export function SolanaAirdropComponent() {
             </div>
             © 2024 Solana Airdrop. All rights reserved. Not affiliated with Solana Foundation.
           </motion.footer>
-          
+
           <ToastContainer
             position="bottom-right"
             autoClose={5000}
