@@ -7,13 +7,14 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { Loader2, ArrowRight, Sun, Moon } from "lucide-react"
+import { Loader2, ArrowRight, Sun, Moon, Copy } from "lucide-react"
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { LAMPORTS_PER_SOL } from "@solana/web3.js"
-
+import { ed25519 } from '@noble/curves/ed25519';
+import bs58 from 'bs58';
 
 const fadeIn = {
   hidden: { opacity: 0 },
@@ -28,6 +29,7 @@ const slideIn = {
 export function SolanaAirdropComponent() {
   const [amount, setAmount] = useState("1")
   const [balance, setBalance] = useState()
+  const [signature, setSignature] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isDarkTheme, setIsDarkTheme] = useState(true)
   const [isWalletConnected, setIsWalletConnected] = useState(false)
@@ -35,10 +37,25 @@ export function SolanaAirdropComponent() {
 
 
 
-
+  const { publicKey, signMessage } = useWallet();
 
   const wallet = useWallet();
   const { connection } = useConnection();
+
+
+  async function signTheMessage() {
+    if (!publicKey) toast.warn('Wallet not connected!');
+    if (!signMessage) toast.warning('Wallet does not support message signing!');
+    const message = "rahulhere";
+    const encodedMessage = new TextEncoder().encode(message);
+    const signature = await signMessage(encodedMessage);
+
+    if (!ed25519.verify(signature, encodedMessage, publicKey?.toBytes())) toast.error('Message signature invalid!');
+    toast.success("message signature :" + bs58.encode(signature))
+    setSignature(bs58.encode(signature));
+
+
+  }
 
   async function showBalance() {
     if (wallet.publicKey) {
@@ -48,10 +65,10 @@ export function SolanaAirdropComponent() {
     }
 
   }
-  
-useEffect(()=>{
-  showBalance();
-},[wallet.publicKey])
+
+  useEffect(() => {
+    showBalance();
+  }, [wallet.publicKey])
 
 
   async function requestAirdrop() {
@@ -107,10 +124,6 @@ useEffect(()=>{
   }
 
 
-
-
-
-
   return (
     <AnimatePresence>
       {isPageLoaded && (
@@ -155,6 +168,26 @@ useEffect(()=>{
               </motion.div>
             </div>
           </motion.header>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="w-full"
+          >
+            <div className="text-white mt-11 pl-24 flex flex-col">
+              <Button className={` w-32 ${isDarkTheme ? 'bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600' : 'bg-gradient-to-r from-purple-400 to-indigo-400 hover:from-purple-500 hover:to-indigo-500'} text-white`}
+                onClick={signTheMessage}
+                disabled={!wallet.publicKey}
+              >
+                AUTHENTICATE
+              </Button>
+              {signature ? <div onClick={() => {
+                 navigator.clipboard.writeText(signature) 
+                 toast.success("Signature Copied to Clipboard")
+                  }} 
+                  className="pt-3 text-sm flex flex-row">Copy  Signature  <Copy className="w-4  ml-2" /> </div> : null}
+            </div>
+          </motion.div>
 
           <main className="flex-grow flex items-center justify-center px-4 py-12">
             <motion.div
