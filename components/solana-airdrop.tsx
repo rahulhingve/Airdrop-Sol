@@ -27,6 +27,7 @@ const slideIn = {
 
 export function SolanaAirdropComponent() {
   const [amount, setAmount] = useState("1")
+  const [balance, setBalance] = useState()
   const [isLoading, setIsLoading] = useState(false)
   const [isDarkTheme, setIsDarkTheme] = useState(true)
   const [isWalletConnected, setIsWalletConnected] = useState(false)
@@ -37,30 +38,44 @@ export function SolanaAirdropComponent() {
 
 
   const wallet = useWallet();
-  const {connection} = useConnection();
+  const { connection } = useConnection();
 
-async function requestAirdrop(){
-
-  try {
-    setIsLoading(true)
-    if (parseFloat(amount) <= 0 || isNaN(parseFloat(amount))) {
-      setIsLoading(false)
-      toast.error("Please enter a valid amount")
-      return
+  async function showBalance() {
+    if (wallet.publicKey) {
+      const getBal = await connection.getBalance(wallet.publicKey);
+      const balance = getBal / LAMPORTS_PER_SOL;
+      setBalance(balance)
     }
-   
 
-    await connection.requestAirdrop(wallet.publicKey,amount *LAMPORTS_PER_SOL)
-    setIsLoading(false)
-    toast.success("Airdropped " + amount + " SOL is Success " )
-  } catch (error) {
-    setIsLoading(false)
-    console.error("Airdrop failed:", error);
-    toast.error("Airdropping failed se console for logs " )
   }
+  
+useEffect(()=>{
+  showBalance();
+},[wallet.publicKey])
 
 
-}
+  async function requestAirdrop() {
+
+    try {
+      setIsLoading(true)
+      if (parseFloat(amount) <= 0 || isNaN(parseFloat(amount))) {
+        setIsLoading(false)
+        toast.error("Please enter a valid amount")
+        return
+      }
+
+
+      await connection.requestAirdrop(wallet.publicKey, amount * LAMPORTS_PER_SOL)
+      setIsLoading(false)
+      toast.success("Airdropped " + amount + " SOL is Success ")
+    } catch (error) {
+      setIsLoading(false)
+      console.error("Airdrop failed:", error);
+      toast.error("Airdropping failed se console for logs ")
+    }
+
+
+  }
 
 
   const checkWalletConnection = () => {
@@ -85,7 +100,7 @@ async function requestAirdrop(){
     setIsPageLoaded(true)
   }, [])
 
-  
+
 
   const toggleTheme = () => {
     setIsDarkTheme(!isDarkTheme)
@@ -148,10 +163,10 @@ async function requestAirdrop(){
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 1.0, delay: 0.2 }}
             >
-              <Card className={`w-full max-w-md ${isDarkTheme ? 'bg-slate-800/50 backdrop-blur-lg' : 'bg-white'} border-0 shadow-2xl`}>
+              <Card className={`w-full  max-w-md ${isDarkTheme ? 'bg-slate-800/50 backdrop-blur-lg' : 'bg-white'} border-0 shadow-2xl`}>
                 <CardHeader>
                   <CardTitle className={`text-3xl font-bold text-center ${isDarkTheme ? 'text-white' : 'text-purple-600'}`}>
-                    Claim Your SOL
+                    Claim Your free SOLANA
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -199,6 +214,7 @@ async function requestAirdrop(){
                       )}
                     </Button>
                     {isWalletConnected ? <div></div> : <div className="text-red-600 mt-2">Please connect the Wallet First</div>}
+                    {wallet.publicKey ? <div className="text-green-500 font-bold mt-4">Your Balance is: {balance} SOL</div> : null}
                   </motion.div>
                 </CardFooter>
               </Card>
