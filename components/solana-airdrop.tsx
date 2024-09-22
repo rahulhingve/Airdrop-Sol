@@ -185,7 +185,7 @@ export function SolanaAirdropComponent() {
                  navigator.clipboard.writeText(signature) 
                  toast.success("Signature Copied to Clipboard")
                   }} 
-                  className={`pt-3 text-sm flex flex-row text-white  ${isDarkTheme ? "text-gray-200" : "text-black"}`}>Copy  Signature  <Copy className="w-4  ml-2" /> </div> : null}
+                  className={`pt-3 text-sm flex flex-row   ${isDarkTheme ? "text-white" : "text-black"}`}>Copy  Signature  <Copy className="w-4  ml-2" /> </div> : null}
             </div>
           </motion.div>
 
