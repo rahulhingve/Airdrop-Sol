@@ -7,39 +7,49 @@ https://github.com/user-attachments/assets/cd2550a2-849b-444f-927d-e6891be843f6
 
 
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) project 
+
+# Solana Airdrop & Send
+
+Solana Airdrop & Send is a web application that allows users to claim free Solana (SOL) tokens and send SOL to other Solana addresses. The application is built using React, Framer Motion, and various Solana-related libraries.
+
+## Features
+
+- **Claim Free SOL**: Users can request an airdrop of SOL tokens by entering an amount and clicking the "Claim" button. The application will request an airdrop from the Solana network and update the user's balance accordingly.
+
+- **Send SOL**: Users can send SOL to other Solana addresses by entering the recipient's public key and the amount to send. The application will create and send a transaction to the Solana network.
+
+- **Wallet Connection**: The application integrates with the Solana Wallet Adapter, allowing users to connect their Solana wallets and interact with the application.
+
+- **Signature Generation**: The application demonstrates how to sign a message using the user's Solana wallet. The generated signature can be copied to the clipboard.
+
+- **Dark Mode**: Users can toggle between a dark and light theme using the theme switch.
+
+- **Notifications**: The application uses the `react-toastify` library to display notifications for successful and failed operations.
+
+## Technologies Used
+
+- **React**: A JavaScript library for building user interfaces.
+- **Framer Motion**: A library for creating animations and transitions in React applications.
+- **Solana Web3.js**: The official Solana SDK for interacting with the Solana blockchain.
+- **Solana Wallet Adapter**: A library for integrating Solana wallets into web applications.
+- **Lucide Icons**: A set of open-source feather-based icons used for the application's icons.
+- **React Toastify**: A library for displaying notifications in React applications.
 
 ## Getting Started
 
-First, run the development server:
+To run the Solana Airdrop & Send application locally, follow these steps:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Clone the repository: `git clone https://github.com/rahulhingve/Airdrop-Sol.git`
+2. Navigate to the project directory: `cd Airdrop-Sol`
+3. Install dependencies: `pnpm install`
+4. Start the development server: `pnpm run dev`
+5. Open your web browser and visit `http://localhost:3000`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Contributions to the Solana Airdrop & Send project are welcome. If you find any issues or have suggestions for improvements, please create a new issue or submit a pull request.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## License
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the [MIT License](LICENSE).
